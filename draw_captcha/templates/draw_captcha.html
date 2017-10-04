@@ -13,17 +13,64 @@
     var input_id = 'captcha_input_{{ name }}';
     var elem_id = 'captcha_element_{{ name }}';
 
-    // Fetch captcha details
-    $.ajax({
-        url: '/draw_captcha/get_details',
-        error: function() {
-            $('#' + elem_id + ' div').text('Error in captcha!');
-        },
-        success: function(data) {
-            console.log(data);
-        },
-    });
+    showText = function(text)
+    {
+        var div = $('<div style="text-align: center; font-family: Arial; color: #aaa; font-size: 32px; font-weight: bold; vertical-align: middle; line-height: 480px;"></div>')
+        div.text(text);
+        $('#' + elem_id).html(div);
+    }
 
+    showDrawingTool = function(instructions)
+    {
+// TODO: Replace with real drawing tool!
+        var form = $('<form enctype="multipart/form-data"></form>');
+        form.append('<input type="file" name="drawing">');
+        form.append('<br>');
+        form.append('<input type="submit" value="{% trans 'Upload drawing' %}">');
+        $('#' + elem_id).html('<div style="width: 400px; height: 80px; text-align: center; font-family: Arial; color: #aaa; font-size: 24px; font-weight: bold; vertical-align: middle; line-height: 80px;">' + instructions + '</div>');
+        $('#' + elem_id).append(form);
+        // Wait for submit event
+        form.submit(function(e) {
+            e.preventDefault();
+            showText('{% trans "Loading..." %}');
 
+            // Convert file to FormData
+            var data = new FormData();
+            data.append('drawing', form.find('input[name="drawing"]')[0].files[0]);
+
+            // Actual submit
+            $.ajax({
+                url: '/draw_captcha/upload_drawing',
+                type: 'post',
+                data: data,
+                contentType: false,
+                processData: false,
+                error: function() {
+                    showText('{% trans "Error when uploading!" %}');
+                },
+                success: function(data) {
+                    startNewTask();
+                },
+            });
+        });
+    }
+
+    startNewTask = function()
+    {
+        // Fetch captcha details
+        $.ajax({
+            url: '/draw_captcha/get_task',
+            error: function() {
+                showText('{% trans "Error in captcha!" %}');
+            },
+            success: function(data) {
+                if (data.draw) {
+                    showDrawingTool(data.instructions);
+                }
+            },
+        });
+    }
+
+    startNewTask();
 };
 </script>
