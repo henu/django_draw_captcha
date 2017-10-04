@@ -1,0 +1,29 @@
+{% load i18n %}
+
+<input id="captcha_input_{{ name }}" type="hidden" name="{{ name }}">
+
+<div id="captcha_element_{{ name }}" style="width: 400px; height: 480px;">
+    <div style="text-align: center; font-family: Arial; color: #aaa; font-size: 32px; font-weight: bold; vertical-align: middle; line-height: 480px;">
+        {% trans 'Loading...' %}
+    </div>
+</div>
+
+<script>
+{
+    var input_id = 'captcha_input_{{ name }}';
+    var elem_id = 'captcha_element_{{ name }}';
+
+    // Fetch captcha details
+    $.ajax({
+        url: '/draw_captcha/get_details',
+        error: function() {
+            $('#' + elem_id + ' div').text('Error in captcha!');
+        },
+        success: function(data) {
+            console.log(data);
+        },
+    });
+
+
+};
+</script>
