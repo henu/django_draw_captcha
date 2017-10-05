@@ -6,6 +6,9 @@ from django.db import IntegrityError
 from .models import Task, Picture
 from .constants import ADJECTIVES, NOUNS, BANNED_COMBINATIONS
 
+VALID_PICTURES_COUNT = 6
+INVALID_PICTURES_COUNT = 16 - VALID_PICTURES_COUNT
+
 def random_string(length):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
@@ -18,26 +21,26 @@ def generate_new_task():
     if selection < len(ADJECTIVES):
         task_type = 'find_adjectives'
         adjective = random.choice(ADJECTIVES.keys())
-        valid_pictures = list(Picture.objects.filter(adjective=adjective).order_by('?')[:8])
-        invalid_pictures = list(Picture.objects.exclude(adjective=adjective).order_by('?')[:8])
+        valid_pictures = list(Picture.objects.filter(adjective=adjective).order_by('?')[:VALID_PICTURES_COUNT])
+        invalid_pictures = list(Picture.objects.exclude(adjective=adjective).order_by('?')[:INVALID_PICTURES_COUNT])
     else:
         task_type = 'find_nouns'
         noun = random.choice(NOUNS.keys())
-        valid_pictures = list(Picture.objects.filter(noun=noun).order_by('?')[:8])
-        invalid_pictures = list(Picture.objects.exclude(noun=noun).order_by('?')[:8])
+        valid_pictures = list(Picture.objects.filter(noun=noun).order_by('?')[:VALID_PICTURES_COUNT])
+        invalid_pictures = list(Picture.objects.exclude(noun=noun).order_by('?')[:INVALID_PICTURES_COUNT])
 
     # In some cases, the user needs to draw a picture.
     # Use loop, because some combinations are not allowed.
     while True:
 
         # If there is not enough pictures, then ask user to draw some
-        if len(valid_pictures) < 8:
+        if len(valid_pictures) < VALID_PICTURES_COUNT:
             task_type = 'draw'
             if noun is None:
                 noun = random.choice(NOUNS.keys())
             if adjective is None:
                 adjective = random.choice(ADJECTIVES.keys())
-        elif len(invalid_pictures) < 8:
+        elif len(invalid_pictures) < INVALID_PICTURES_COUNT:
             task_type = 'draw'
             if noun is None:
                 noun = random.choice(NOUNS.keys())
