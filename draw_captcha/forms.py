@@ -4,6 +4,9 @@ from __future__ import unicode_literals
 from django import forms
 from django.template import loader
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
+
+from .models import Task
 
 
 class CaptchaWidget(forms.widgets.Widget):
@@ -30,4 +33,6 @@ class CaptchaField(forms.Field):
         )
 
     def clean(self, value):
+        if not Task.objects.filter(secret=value).exists():
+            raise forms.ValidationError(_('Captcha was not completed!'))
         return value

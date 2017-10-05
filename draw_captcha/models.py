@@ -37,11 +37,16 @@ class Task(models.Model):
     uuid = models.CharField(max_length=16, primary_key=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    secret = models.CharField(max_length=16)
+
+    # This is set if task is completed
+    secret = models.CharField(max_length=16, unique=True, blank=True, null=True, default=None)
 
     task_type = models.CharField(max_length=16)
     adjective = models.CharField(max_length=16, null=True, blank=True)
     noun = models.CharField(max_length=16, null=True, blank=True)
+
+    valid_pictures = models.ManyToManyField(Picture, related_name='valid_in_tasks')
+    invalid_pictures = models.ManyToManyField(Picture, related_name='invalid_in_tasks')
 
     def get_instructions(self):
         if self.task_type == 'draw':

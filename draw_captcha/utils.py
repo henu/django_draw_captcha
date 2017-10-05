@@ -11,8 +11,6 @@ def random_string(length):
 
 
 def generate_new_task():
-    secret = random_string(16)
-
     # Select type
     task_type = random.randint(0, 1)
     adjective = None
@@ -51,7 +49,6 @@ def generate_new_task():
         try:
             task = Task.objects.create(
                 uuid=random_string(16),
-                secret=secret,
                 task_type=task_type,
                 adjective=adjective,
                 noun=noun,
@@ -59,5 +56,12 @@ def generate_new_task():
             break
         except IntegrityError:
             pass
+
+    # If not a drawing task, then add images
+    if task_type != 'draw':
+        for pic in valid_pictures:
+            task.valid_pictures.add(pic)
+        for pic in invalid_pictures:
+            task.invalid_pictures.add(pic)
 
     return task

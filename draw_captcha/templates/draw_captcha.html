@@ -27,11 +27,12 @@
         form.append('<input type="file" name="drawing">');
         form.append('<br>');
         form.append('<input type="submit" value="{% trans 'Upload drawing' %}">');
-        $('#' + elem_id).html('<div style="width: 400px; height: 80px; text-align: center; font-family: Arial; color: #aaa; font-size: 24px; font-weight: bold; vertical-align: middle; line-height: 80px;">' + instructions + '</div>');
+        $('#' + elem_id).html('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 50px; text-align: center; font-family: Arial; color: #aaa; font-size: 24px; font-weight: bold; vertical-align: middle; line-height: 50px;">' + instructions + '</div>');
         $('#' + elem_id).append(form);
         // Wait for submit event
         form.submit(function(e) {
             e.preventDefault();
+
             showText('{% trans "Loading..." %}');
 
             // Convert file to FormData
@@ -55,6 +56,58 @@
         });
     }
 
+    showSelectonTool = function(instructions, pictures)
+    {
+        // First add instructions
+        $('#' + elem_id).html('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 50px; text-align: center; font-family: Arial; color: #aaa; font-size: 24px; font-weight: bold; vertical-align: middle; line-height: 50px;">' + instructions + '</div>');
+
+        var selected_pictures = [];
+
+        // Add pictures
+        for (var i = 0; i < pictures.length; ++ i) {
+            var picture = pictures[i];
+            var img = $('<img style="display: inline-block; vertical-align: bottom; width: 100px; height: 100px;" src="' + picture[1] + '" width="100" height="100">');
+            img.data('picture_id', picture[0]);
+            img.on('click', function(e) {
+                var img = $(e.target);
+                if (img.css('opacity') > 0.65) {
+                    img.css('opacity', 0.3);
+                    selected_pictures.push(img.data('picture_id'));
+                } else {
+                    img.css('opacity', 1.0);
+                    selected_pictures.splice(selected_pictures.indexOf(img.data('picture_id')), 1);
+                }
+            });
+            $('#' + elem_id).append(img);
+        }
+
+        // Add "Ready" button
+        var button = $('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 30px; text-align: center;"><button>{% trans "Ready!" %}</button>');
+        button.on('click', function(e) {
+            e.preventDefault();
+
+            showText('{% trans "Loading..." %}');
+
+            $.ajax({
+                url: '/draw_captcha/complete_task',
+                type: 'post',
+                data: {pictures_ids: selected_pictures.join()},
+                error: function() {
+                    showText('{% trans "Error when completing captcha!" %}');
+                },
+                success: function(data) {
+                    if (data.secret) {
+                        $('#' + input_id).val(data.secret);
+                        showText('{% trans "Completed!" %}');
+                    } else {
+                        startNewTask();
+                    }
+                },
+            });
+        });
+        $('#' + elem_id).append(button);
+    }
+
     startNewTask = function()
     {
         // Fetch captcha details
@@ -64,8 +117,13 @@
                 showText('{% trans "Error in captcha!" %}');
             },
             success: function(data) {
-                if (data.draw) {
+                if (data.secret) {
+                    $('#' + input_id).val(data.secret);
+                    showText('{% trans "Completed!" %}');
+                } else if (data.draw) {
                     showDrawingTool(data.instructions);
+                } else {
+                    showSelectonTool(data.instructions, data.pictures);
                 }
             },
         });

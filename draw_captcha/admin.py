@@ -5,7 +5,7 @@ from .models import Task, Picture
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    readonly_fields = ['uuid', 'secret', 'created_at', 'task_type', 'adjective', 'noun']
+    readonly_fields = ['uuid', 'secret', 'created_at', 'task_type', 'adjective', 'noun', 'valid_pictures', 'invalid_pictures']
 
 
 @admin.register(Picture)
