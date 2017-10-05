@@ -7,6 +7,7 @@ from django.db import IntegrityError
 from django.db.models import F
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
 
 from io import BytesIO
 from PIL import Image
@@ -15,6 +16,8 @@ import random
 from .models import Task, Picture
 from .utils import generate_new_task, random_string
 
+
+@require_GET
 def get_task(request):
 
     details = {}
@@ -46,6 +49,7 @@ def get_task(request):
 
 
 @csrf_exempt
+@require_POST
 def upload_drawing(request):
 
     # Make sure user has proper task open
@@ -83,6 +87,7 @@ def upload_drawing(request):
 
 
 @csrf_exempt
+@require_POST
 def complete_task(request):
 
     # Make sure user has proper task open
