@@ -4,45 +4,61 @@ import string
 from django.db import IntegrityError
 
 from .models import Task, Picture
-from .constants import ADJECTIVES, NOUNS
+from .constants import ADJECTIVES, NOUNS, BANNED_COMBINATIONS
 
 def random_string(length):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
 
 def generate_new_task():
-    # Select type
-    task_type = random.randint(0, 1)
+    # By default, an picture finding task is created
+    selection = random.randint(0, len(ADJECTIVES) + len(NOUNS) - 1)
     adjective = None
     noun = None
-    if task_type == 0:
+    if selection < len(ADJECTIVES):
         task_type = 'find_adjectives'
         adjective = random.choice(ADJECTIVES.keys())
         valid_pictures = list(Picture.objects.filter(adjective=adjective).order_by('?')[:8])
         invalid_pictures = list(Picture.objects.exclude(adjective=adjective).order_by('?')[:8])
-    elif task_type == 1:
+    else:
         task_type = 'find_nouns'
         noun = random.choice(NOUNS.keys())
         valid_pictures = list(Picture.objects.filter(noun=noun).order_by('?')[:8])
         invalid_pictures = list(Picture.objects.exclude(noun=noun).order_by('?')[:8])
 
-    # If there is not enough pictures, then ask user to draw some
-    if len(valid_pictures) < 8:
-        task_type = 'draw'
-        if noun is None:
+    # In some cases, the user needs to draw a picture.
+    # Use loop, because some combinations are not allowed.
+    while True:
+
+        # If there is not enough pictures, then ask user to draw some
+        if len(valid_pictures) < 8:
+            task_type = 'draw'
+            if noun is None:
+                noun = random.choice(NOUNS.keys())
+            if adjective is None:
+                adjective = random.choice(ADJECTIVES.keys())
+        elif len(invalid_pictures) < 8:
+            task_type = 'draw'
+            if noun is None:
+                noun = random.choice(NOUNS.keys())
+            else:
+                noun = random.choice([noun2 for noun2 in NOUNS.keys() if noun2 != noun])
+            if adjective is None:
+                adjective = random.choice(ADJECTIVES.keys())
+            else:
+                adjective = random.choice([adjective2 for adjective2 in ADJECTIVES.keys() if adjective2 != adjective])
+
+        # Ten percent of users need to draw something anyway
+        if task_type != 'draw' and random.randint(0, 9) == 0:
+            task_type = 'draw'
             noun = random.choice(NOUNS.keys())
-        if adjective is None:
             adjective = random.choice(ADJECTIVES.keys())
-    elif len(invalid_pictures) < 8:
-        task_type = 'draw'
-        if noun is None:
-            noun = random.choice(NOUNS.keys())
-        else:
-            noun = random.choice([noun2 for noun2 in NOUNS.keys() if noun2 != noun])
-        if adjective is None:
-            adjective = random.choice(ADJECTIVES.keys())
-        else:
-            adjective = random.choice([adjective2 for adjective2 in ADJECTIVES.keys() if adjective2 != adjective])
+
+        # If drawing task was created, then make sure the combination is permitted
+        if task_type == 'draw' and (adjective, noun) in BANNED_COMBINATIONS:
+            continue
+
+        break
 
     # Actual creation
     while True:
