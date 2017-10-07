@@ -2,7 +2,7 @@
 
 <input id="captcha_input_{{ name }}" type="hidden" name="{{ name }}">
 
-<div id="captcha_element_{{ name }}" style="width: 400px; height: 480px;">
+<div id="captcha_element_{{ name }}" style="width: 400px; height: 480px; border: 1px solid #aaa">
     <div style="text-align: center; font-family: Arial; color: #aaa; font-size: 32px; font-weight: bold; vertical-align: middle; line-height: 480px;">
         {% trans 'Loading...' %}
     </div>
@@ -39,7 +39,7 @@
     showDrawingTool = function(instructions)
     {
         // Header
-        var header = $('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 50px; text-align: center; font-family: Arial; color: #aaa; font-size: 24px; font-weight: bold; vertical-align: middle; line-height: 50px;">' + instructions + '</div>');
+        var header = $('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 50px; text-align: center; background-color: #eee; font-family: Arial; color: #aaa; font-size: 24px; font-weight: bold; vertical-align: middle; line-height: 50px;">' + instructions + '</div>');
 
         // Canvas
         var canvas = $('<canvas width="400" height="400" style="display: inline-block; vertical-align: bottom;">');
@@ -114,7 +114,7 @@
         });
 
         // Footer
-        var footer = $('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 30px; text-align: center;"></div>');
+        var footer = $('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 30px; text-align: center; background-color: #eee;"></div>');
         footer.html(ready_button);
 
         // Combine all elements
@@ -126,7 +126,7 @@
     showSelectonTool = function(instructions, pictures)
     {
         // First add instructions
-        $('#' + elem_id).html('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 50px; text-align: center; font-family: Arial; color: #aaa; font-size: 24px; font-weight: bold; vertical-align: middle; line-height: 50px;">' + instructions + '</div>');
+        $('#' + elem_id).html('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 50px; text-align: center; background-color: #eee; font-family: Arial; color: #aaa; font-size: 24px; font-weight: bold; vertical-align: middle; line-height: 50px;">' + instructions + '</div>');
 
         var selected_pictures = [];
 
@@ -149,7 +149,7 @@
         }
 
         // Add "Ready" button
-        var button = $('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 30px; text-align: center;"><button>{% trans "Ready!" %}</button>');
+        var button = $('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 30px; text-align: center; background-color: #eee;"><button>{% trans "Ready!" %}</button>');
         button.on('click', function(e) {
             e.preventDefault();
 
