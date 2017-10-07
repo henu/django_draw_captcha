@@ -9,6 +9,7 @@ from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequ
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
+import base64
 from io import BytesIO
 from PIL import Image
 import random
@@ -60,14 +61,21 @@ def upload_drawing(request):
     if task.task_type != 'draw':
         return HttpResponseForbidden()
 
-    file = request.FILES.get('drawing')
-    if not file:
+    # Read image data
+    drawing = request.POST.get('drawing')
+    if not drawing:
+        return HttpResponseBadRequest()
+    try:
+        drawing = base64.decodestring(drawing.split(',', 1)[1])
+    except:
         return HttpResponseBadRequest()
 
     # Open image and scale it down
     try:
-        img = Image.open(BytesIO(file.read()))
+        img = Image.open(BytesIO(drawing))
     except IOError:
+        return HttpResponseBadRequest()
+    if (img.size != (400, 400)):
         return HttpResponseBadRequest()
     img.thumbnail([100, 100], Image.ANTIALIAS)
 
