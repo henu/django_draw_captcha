@@ -62,7 +62,8 @@
         ctx.fillStyle = "#fff";
         ctx.fill();
 
-        ctx.fillStyle = "#000";
+        ctx.fillStyle = '#222';
+        ctx.strokeStyle = '#222';
 
         // Drawing state
         var paint = false;
@@ -121,8 +122,50 @@
             paint = false;
         });
 
+        var black_color_button = $('<div style="display: inline-block; border: 1px solid #000; background-color: #222; width: 20px; height: 20px; margin: 4px 4px;"></div>');
+        black_color_button.on('click', function(e) {
+            ctx.fillStyle = '#222';
+            ctx.strokeStyle = '#222';
+        });
+
+        var red_color_button = $('<div style="display: inline-block; border: 1px solid #000; background-color: #f33; width: 20px; height: 20px; margin: 4px 4px;"></div>');
+        red_color_button.on('click', function(e) {
+            ctx.fillStyle = '#f33';
+            ctx.strokeStyle = '#f33';
+        });
+
+        var yellow_color_button = $('<div style="display: inline-block; border: 1px solid #000; background-color: #ff3; width: 20px; height: 20px; margin: 4px 4px;"></div>');
+        yellow_color_button.on('click', function(e) {
+            ctx.fillStyle = '#ff3';
+            ctx.strokeStyle = '#ff3';
+        });
+
+        var green_color_button = $('<div style="display: inline-block; border: 1px solid #000; background-color: #3f3; width: 20px; height: 20px; margin: 4px 4px;"></div>');
+        green_color_button.on('click', function(e) {
+            ctx.fillStyle = '#3f3';
+            ctx.strokeStyle = '#3f3';
+        });
+
+        var cyan_color_button = $('<div style="display: inline-block; border: 1px solid #000; background-color: #3ff; width: 20px; height: 20px; margin: 4px 4px;"></div>');
+        cyan_color_button.on('click', function(e) {
+            ctx.fillStyle = '#3ff';
+            ctx.strokeStyle = '#3ff';
+        });
+
+        var blue_color_button = $('<div style="display: inline-block; border: 1px solid #000; background-color: #33f; width: 20px; height: 20px; margin: 4px 4px;"></div>');
+        blue_color_button.on('click', function(e) {
+            ctx.fillStyle = '#33f';
+            ctx.strokeStyle = '#33f';
+        });
+
+        var purple_color_button = $('<div style="display: inline-block; border: 1px solid #000; background-color: #f3f; width: 20px; height: 20px; margin: 4px 4px;"></div>');
+        purple_color_button.on('click', function(e) {
+            ctx.fillStyle = '#f3f';
+            ctx.strokeStyle = '#f3f';
+        });
+
         // "Ready" button
-        var ready_button = $('<button style="font-size: 14px; background-color: #47a3e4; border: none; color: #fff; padding: 4px 16px; border-radius: 6px; margin: 2px; height: 26px;">{% trans "Ready!" %}</button>');
+        var ready_button = $('<button style="font-size: 14px; background-color: #47a3e4; border: none; color: #fff; padding: 4px 16px; border-radius: 6px; margin: 2px 8px; float: right; height: 26px;">{% trans "Ready!" %}</button>');
         ready_button.on('click', function(e) {
             e.preventDefault();
 
@@ -148,8 +191,15 @@
         });
 
         // Footer
-        var footer = $('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 30px; text-align: center; background-color: #eee;"></div>');
-        footer.html(ready_button);
+        var footer = $('<div style="display: inline-block; vertical-align: bottom; width: 400px; height: 30px; text-align: left; background-color: #eee;"></div>');
+        footer.append(ready_button);
+        footer.append(black_color_button);
+        footer.append(red_color_button);
+        footer.append(yellow_color_button);
+        footer.append(green_color_button);
+        footer.append(cyan_color_button);
+        footer.append(blue_color_button);
+        footer.append(purple_color_button);
 
         // Combine all elements
         $('#' + elem_id).html(header);
