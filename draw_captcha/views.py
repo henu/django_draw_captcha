@@ -107,12 +107,12 @@ def complete_task(request):
         return HttpResponseForbidden()
 
     # Read and validate arguments
-    pictures_ids_raw = request.POST.get('pictures_ids', '').split(',')
+    pictures_ids_raw = filter(None, request.POST.get('pictures_ids', '').split(','))
     pictures_ids = []
     for picture_id_raw in pictures_ids_raw:
         try:
             picture_id = int(picture_id_raw)
-        except ValueErrur:
+        except ValueError:
             return HttpResponseBadRequest()
         pictures_ids.append(picture_id)
     pictures_ids = set(pictures_ids)
