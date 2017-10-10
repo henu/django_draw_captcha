@@ -36,6 +36,17 @@
         ctx.stroke();
     }
 
+    getFirstTouch = function(e)
+    {
+        for (var i = 0; i < e.changedTouches.length; ++ i) {
+            var touch = e.changedTouches[i];
+            if (touch.identifier == 0) {
+                return touch;
+            }
+        }
+        return undefined;
+    }
+
     showDrawingTool = function(instructions)
     {
         // Header
@@ -55,35 +66,58 @@
 
         // Drawing state
         var paint = false;
-        var last_mouse_x = 0;
-        var last_mouse_y = 0;
+        var last_draw_x = 0;
+        var last_draw_y = 0;
         var line_width = 5;
 
         // Drawing events
-        canvas.mousedown(function(e) {
-            var mouse_x = e.pageX - ctx.canvas.offsetLeft;
-            var mouse_y = e.pageY - ctx.canvas.offsetTop;
+        canvas.on('mousedown touchstart', function(e) {
+            e.preventDefault();
+
+            if (e.type == 'mousedown') {
+                var draw_x = e.pageX - ctx.canvas.offsetLeft;
+                var draw_y = e.pageY - ctx.canvas.offsetTop;
+            } else {
+                var touch = getFirstTouch(e);
+                if (!touch) {
+                    return;
+                }
+                var draw_x = touch.clientX - ctx.canvas.offsetLeft;
+                var draw_y = touch.clientY - ctx.canvas.offsetTop;
+            }
 
             paint = true;
 
-            drawCircle(ctx, mouse_x, mouse_y, line_width / 2);
+            drawCircle(ctx, draw_x, draw_y, line_width / 2);
 
-            last_mouse_x = mouse_x;
-            last_mouse_y = mouse_y;
+            last_draw_x = draw_x;
+            last_draw_y = draw_y;
         });
-        $(document).mousemove(function(e) {
+        $(document).on('mousemove touchmove', function(e) {
             if (paint) {
-                var mouse_x = e.pageX - ctx.canvas.offsetLeft;
-                var mouse_y = e.pageY - ctx.canvas.offsetTop;
+                if (e.type == 'mousemove') {
+                    var draw_x = e.pageX - ctx.canvas.offsetLeft;
+                    var draw_y = e.pageY - ctx.canvas.offsetTop;
+                } else {
+                    var touch = getFirstTouch(e);
+                    if (!touch) {
+                        return;
+                    }
+                    var draw_x = touch.clientX - ctx.canvas.offsetLeft;
+                    var draw_y = touch.clientY - ctx.canvas.offsetTop;
+                }
 
-                drawLine(ctx, last_mouse_x, last_mouse_y, mouse_x, mouse_y, line_width / 2);
-                drawCircle(ctx, mouse_x, mouse_y, line_width / 2);
+                drawLine(ctx, last_draw_x, last_draw_y, draw_x, draw_y, line_width / 2);
+                drawCircle(ctx, draw_x, draw_y, line_width / 2);
 
-                last_mouse_x = mouse_x;
-                last_mouse_y = mouse_y;
+                last_draw_x = draw_x;
+                last_draw_y = draw_y;
             }
         });
-        $(document).mouseup(function(e) {
+        $(document).on('mouseup touchend touchcancel', function(e) {
+            if (e.type != 'mouseup' && !getFirstTouch(e)) {
+                return;
+            }
             paint = false;
         });
 
