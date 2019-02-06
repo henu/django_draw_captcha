@@ -14,24 +14,23 @@ def random_string(length):
 
 
 def generate_new_task():
-    # By default, an picture finding task is created
-    selection = random.randint(0, len(ADJECTIVES) + len(NOUNS) - 1)
-    adjective = None
-    noun = None
-    if selection < len(ADJECTIVES):
-        task_type = 'find_adjectives'
-        adjective = random.choice(list(ADJECTIVES.keys()))
-        valid_pictures = list(Picture.objects.filter(adjective=adjective).order_by('?')[:VALID_PICTURES_COUNT])
-        invalid_pictures = list(Picture.objects.exclude(adjective=adjective).order_by('?')[:INVALID_PICTURES_COUNT])
-    else:
-        task_type = 'find_nouns'
-        noun = random.choice(list(NOUNS.keys()))
-        valid_pictures = list(Picture.objects.filter(noun=noun).order_by('?')[:VALID_PICTURES_COUNT])
-        invalid_pictures = list(Picture.objects.exclude(noun=noun).order_by('?')[:INVALID_PICTURES_COUNT])
-
     # In some cases, the user needs to draw a picture.
     # Use loop, because some combinations are not allowed.
     while True:
+        # By default, a picture finding task is created
+        selection = random.randint(0, len(ADJECTIVES) + len(NOUNS) - 1)
+        adjective = None
+        noun = None
+        if selection < len(ADJECTIVES):
+            task_type = 'find_adjectives'
+            adjective = random.choice(list(ADJECTIVES.keys()))
+            valid_pictures = list(Picture.objects.filter(adjective=adjective).order_by('?')[:VALID_PICTURES_COUNT])
+            invalid_pictures = list(Picture.objects.exclude(adjective=adjective).order_by('?')[:INVALID_PICTURES_COUNT])
+        else:
+            task_type = 'find_nouns'
+            noun = random.choice(list(NOUNS.keys()))
+            valid_pictures = list(Picture.objects.filter(noun=noun).order_by('?')[:VALID_PICTURES_COUNT])
+            invalid_pictures = list(Picture.objects.exclude(noun=noun).order_by('?')[:INVALID_PICTURES_COUNT])
 
         # If there is not enough pictures, then ask user to draw some
         if len(valid_pictures) < VALID_PICTURES_COUNT:
