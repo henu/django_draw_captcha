@@ -20,12 +20,12 @@ def generate_new_task():
     noun = None
     if selection < len(ADJECTIVES):
         task_type = 'find_adjectives'
-        adjective = random.choice(ADJECTIVES.keys())
+        adjective = random.choice(list(ADJECTIVES.keys()))
         valid_pictures = list(Picture.objects.filter(adjective=adjective).order_by('?')[:VALID_PICTURES_COUNT])
         invalid_pictures = list(Picture.objects.exclude(adjective=adjective).order_by('?')[:INVALID_PICTURES_COUNT])
     else:
         task_type = 'find_nouns'
-        noun = random.choice(NOUNS.keys())
+        noun = random.choice(list(NOUNS.keys()))
         valid_pictures = list(Picture.objects.filter(noun=noun).order_by('?')[:VALID_PICTURES_COUNT])
         invalid_pictures = list(Picture.objects.exclude(noun=noun).order_by('?')[:INVALID_PICTURES_COUNT])
 
@@ -37,25 +37,25 @@ def generate_new_task():
         if len(valid_pictures) < VALID_PICTURES_COUNT:
             task_type = 'draw'
             if noun is None:
-                noun = random.choice(NOUNS.keys())
+                noun = random.choice(list(NOUNS.keys()))
             if adjective is None:
-                adjective = random.choice(ADJECTIVES.keys())
+                adjective = random.choice(list(ADJECTIVES.keys()))
         elif len(invalid_pictures) < INVALID_PICTURES_COUNT:
             task_type = 'draw'
             if noun is None:
-                noun = random.choice(NOUNS.keys())
+                noun = random.choice(list(NOUNS.keys()))
             else:
                 noun = random.choice([noun2 for noun2 in NOUNS.keys() if noun2 != noun])
             if adjective is None:
-                adjective = random.choice(ADJECTIVES.keys())
+                adjective = random.choice(list(ADJECTIVES.keys()))
             else:
                 adjective = random.choice([adjective2 for adjective2 in ADJECTIVES.keys() if adjective2 != adjective])
 
         # Ten percent of users need to draw something anyway
         if task_type != 'draw' and random.randint(0, 9) == 0:
             task_type = 'draw'
-            noun = random.choice(NOUNS.keys())
-            adjective = random.choice(ADJECTIVES.keys())
+            noun = random.choice(list(NOUNS.keys()))
+            adjective = random.choice(list(ADJECTIVES.keys()))
 
         # If drawing task was created, then make sure the combination is permitted
         if task_type == 'draw' and (adjective, noun) in BANNED_COMBINATIONS:
