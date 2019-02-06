@@ -66,7 +66,7 @@ def upload_drawing(request):
     if not drawing:
         return HttpResponseBadRequest()
     try:
-        drawing = base64.decodestring(drawing.split(',', 1)[1])
+        drawing = base64.decodestring(str.encode(drawing.split(',', 1)[1]))
     except:
         return HttpResponseBadRequest()
 
