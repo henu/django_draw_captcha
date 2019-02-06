@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
 import base64
+import colorsys
 from io import BytesIO
 from PIL import Image
 import random
@@ -45,6 +46,23 @@ def get_task(request):
     for picture in task.invalid_pictures.all():
         details['pictures'].append([picture.id, picture.img.url])
     random.shuffle(details['pictures'])
+
+    if details['draw']:
+        random.seed(task.uuid)
+        details['colors'] = ['#222']
+        hue = random.uniform(0, 1)
+        saturation = random.uniform(0.8, 1)
+        lightness = random.uniform(0.8, 1)
+        COLORS = 9
+        for i in range(COLORS):
+            hue = (hue + 1 / COLORS) % 1
+            red, green, blue = colorsys.hsv_to_rgb(hue, saturation, lightness)
+            color = '#{:02x}{:02x}{:02x}'.format(
+                max(0, min(255, int(red * 255))),
+                max(0, min(255, int(green * 255))),
+                max(0, min(255, int(blue * 255))),
+            )
+            details['colors'].append(color)
 
     return JsonResponse(details)
 
