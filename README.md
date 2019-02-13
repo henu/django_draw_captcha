@@ -1,3 +1,6 @@
+Django Draw Captcha
+===================
+
 The problem with captcha libraries is, that they are not able to generate new
 content like humans. So I got this idea to write a captcha library for Django
 that asks users to draw more material when needed. The actual captcha is to
