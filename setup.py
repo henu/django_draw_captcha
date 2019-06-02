@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name='django_draw_captcha',
     description='Captcha based on drawings by users.',
-    version='1.0.4',
+    version='1.0.5',
     packages=['draw_captcha'],
     author='Henrik Heino',
     author_email='henrik.heino@gmail.com',

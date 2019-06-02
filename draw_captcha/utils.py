@@ -2,6 +2,7 @@ import random
 import string
 
 from django.db import IntegrityError
+from django.db.models import F
 
 from .models import Task, Picture
 from .constants import ADJECTIVES, NOUNS, BANNED_COMBINATIONS
@@ -9,11 +10,23 @@ from .constants import ADJECTIVES, NOUNS, BANNED_COMBINATIONS
 VALID_PICTURES_COUNT = 6
 INVALID_PICTURES_COUNT = 16 - VALID_PICTURES_COUNT
 
+
 def random_string(length):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
 
+def clean_bad_pictures():
+    bad_pictures = Picture.objects.filter(
+        failed_identifications__gt=5,
+        valid_identifications__lt=F('failed_identifications') * 5,
+    )
+    bad_pictures.delete()
+
+
 def generate_new_task():
+    # Before anything else, clean crappy drawings
+    clean_bad_pictures()
+
     # In some cases, the user needs to draw a picture.
     # Use loop, because some combinations are not allowed.
     while True:
