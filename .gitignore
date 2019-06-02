@@ -1,2 +1,4 @@
 *.pyc
+/build
+/dist
 /django_draw_captcha.egg-info
